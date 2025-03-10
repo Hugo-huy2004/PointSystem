@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nhập Điểm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #4CAF50; 
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      background: #fff;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: inline-block; 
+      margin: 0.5rem 1rem 0.5rem 0;
+    }
+    button {
+      margin: 1rem 0.5rem 0 0;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #4CAF50;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    .day {
+      margin: 1rem 0;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    .checkbox-group label {
+      margin-right: 10px;
+      display: inline-block;
+    }
+    footer {
+        background-color: #2c3e50; /* Màu nền */
+        color: white; /* Màu chữ */
+        text-align: center; /* Căn giữa nội dung */
+        padding: 20px 10px; /* Khoảng cách bên trong */
+        font-size: 16px; /* Cỡ chữ */
+        position: relative; /* Giữ cố định dưới cùng */
+        bottom: 0;
+        width: 100%;
+    }
+    
+    footer a {
+        color: #1abc9c; /* Màu liên kết */
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    
+    footer a:hover {
+        color: #f1c40f; /* Màu khi hover */
+    }
+    
+    .footer-container {
+        display: flex;
+        justify-content: space-between; /* Cách đều các phần */
+        align-items: center;
+        max-width: 1200px;
+        margin: auto;
+        flex-wrap: wrap;
+    }
+    
+    .footer-left,
+    .footer-right {
+        flex: 1;
+        text-align: left;
+    }
+    
+    .footer-right {
+        text-align: right;
+    }
+    
+    .footer-center {
+        flex: 2;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+        .footer-container {
+            flex-direction: column;
+            text-align: center;
+        }
+    
+        .footer-left,
+        .footer-right {
+            text-align: center;
+            margin-top: 10px;
+        }
+    }
+    
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hệ Thống Chấm Điểm</h1>
+  </header>
+  <main>
+    <h2>Nhập Điểm Theo Ngày</h2>
+    <form id="pointsForm">
+      <label>Ngày bắt đầu:
+        <input type="date" id="start_date" required>
+      </label>
+      <label>Ngày kết thúc:
+        <input type="date" id="end_date" required>
+      </label>
+      <br>
+      <button type="button" onclick="generateDays()">Tạo danh sách ngày</button>
+      
+      <div id="days-container"></div>
+      <button type="submit">Xác nhận & Tiếp tục</button>
+    </form>
+  </main>
+    <footer>
+        <div class="footer-container">
+            <div class="footer-left">
+            © 2025 Hugo. All Rights Reserved. Trang web được tạo bởi Huynh Trưởng Phêrô Lê Gia Huy
+            </div>
+        <div class="footer-center">
+            <a href="#">Chính sách bảo mật</a> | 
+            <a href="#">Điều khoản sử dụng</a>
+        </div>
+        <div class="footer-right">
+            Follow us: 
+            <a href="https://facebook.com/hugowishpax">Facebook</a> 
+        </div>
+        </div>
+    </footer>
+
+  
+  <script>
+    const pointsMap = {
+      'vàng': 2,
+      'tím': 5,
+      'đỏ': 2,
+      'xanh_lá': 3,
+      'hồng': 4,
+      'xanh_dương': 5
+    };
+    
+    function generateDays() {
+      const container = document.getElementById("days-container");
+      container.innerHTML = ""; 
+      
+      const start = new Date(document.getElementById("start_date").value);
+      const end = new Date(document.getElementById("end_date").value);
+      
+      if (start > end) {
+        alert("Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc!");
+        return;
+      }
+      
+      for(let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+        const dateStr = d.toISOString().split("T")[0];
+        let dayDiv = document.createElement("div");
+        dayDiv.className = "day";
+        dayDiv.innerHTML = `<strong>${dateStr}</strong>`;
+        
+        let checkboxGroup = document.createElement("div");
+        checkboxGroup.className = "checkbox-group";
+        
+        for (let color in pointsMap) {
+          let label = document.createElement("label");
+          label.innerHTML = `<input type="checkbox" name="point_${dateStr}" value="${color}"> ${color}`;
+          checkboxGroup.appendChild(label);
+        }
+        dayDiv.appendChild(checkboxGroup);
+        container.appendChild(dayDiv);
+      }
+    }
+    
+    document.getElementById("pointsForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      let pointsData = [];
+      const container = document.getElementById("days-container");
+      if (!container.children.length) {
+        alert("Vui lòng tạo danh sách ngày trước khi xác nhận!");
+        return;
+      }
+      
+      Array.from(container.children).forEach(dayDiv => {
+        let day = dayDiv.querySelector("strong").innerText;
+        let selections = [];
+        dayDiv.querySelectorAll("input[type=checkbox]:checked").forEach(cb => {
+          selections.push(cb.value);
+        });
+        pointsData.push({ date: day, selections });
+      });
+      
+      const startDateValue = document.getElementById("start_date").value;
+      const endDateValue = document.getElementById("end_date").value;
+      localStorage.setItem("pointsData", JSON.stringify(pointsData));
+      localStorage.setItem("startDateInput", startDateValue);
+      localStorage.setItem("endDateInput", endDateValue);
+      
+      window.location.href = "confirm.html";
+    });
+  </script>
+</body>
+</html>

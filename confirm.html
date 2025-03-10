@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Xác Nhận Thông Tin & Điểm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #4CAF50; 
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      background: #fff;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    button {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #4CAF50;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    p strong {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hệ Thống Chấm Điểm</h1>
+  </header>
+  <main>
+    <h2>Xác Nhận Thông Tin & Điểm</h2>
+    
+    <div class="section" id="student-info">
+      <h3>Thông Tin Cá Nhân</h3>
+      <div id="infoDisplay"></div>
+    </div>
+    
+    <div class="section" id="date-range">
+      <h3>Khoảng Ngày Đã Chọn</h3>
+      <div id="dateRangeDisplay"></div>
+    </div>
+    
+    <div class="section" id="points-info">
+      <h3>Điểm Theo Ngày</h3>
+      <div id="pointsDisplay"></div>
+    </div>
+    
+    <button onclick="editData()">Nhập Lại</button>
+    <button onclick="submitData()">Gửi Điểm</button>
+  </main>
+  
+  <script>
+    const student = JSON.parse(localStorage.getItem("studentInfo")) || {};
+    let infoHtml = `
+      <p>Họ và tên: <strong>${student.name || ''}</strong></p>
+      <p>Ngày sinh: <strong>${student.dob || ''}</strong></p>
+      <p>Lớp: <strong>${student.class || ''}</strong></p>
+      <p>Số điện thoại: <strong>${student.phone || ''}</strong></p>
+      <p>Địa chỉ: <strong>${student.address || ''}</strong></p>
+    `;
+    document.getElementById("infoDisplay").innerHTML = infoHtml;
+    
+    const startDate = localStorage.getItem("startDateInput") || '';
+    const endDate = localStorage.getItem("endDateInput") || '';
+    document.getElementById("dateRangeDisplay").innerHTML = `
+      <p>Ngày bắt đầu: <strong>${startDate}</strong></p>
+      <p>Ngày kết thúc: <strong>${endDate}</strong></p>
+    `;
+    
+    const pointsData = JSON.parse(localStorage.getItem("pointsData")) || [];
+    let pointsHtml = "";
+    pointsData.forEach(item => {
+      pointsHtml += `<p><strong>${item.date}:</strong> ${item.selections.join(", ") || "Không có lựa chọn"}</p>`;
+    });
+    document.getElementById("pointsDisplay").innerHTML = pointsHtml;
+    
+    function editData() {
+      window.history.back();
+    }
+    
+    function submitData() {
+      const pointsMap = { vàng: 2, tím: 5, đỏ: 2, xanh_lá: 3, hồng: 4, xanh_dương: 5 };
+      let totalPoints = 0;
+      pointsData.forEach(item => {
+        item.selections.forEach(color => {
+          totalPoints += pointsMap[color] || 0;
+        });
+      });
+      
+      let result = {
+        student,
+        pointsData,
+        totalPoints,
+        submittedAt: new Date().toISOString(),
+        startDate,
+        endDate
+      };
+      
+      let db = JSON.parse(localStorage.getItem("database")) || [];
+      db.push(result);
+      localStorage.setItem("database", JSON.stringify(db));
+      
+      localStorage.setItem("totalPoints", totalPoints);
+      window.location.href = "submit.html";
+    }
+  </script>
+</body>
+</html>

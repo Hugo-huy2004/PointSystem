@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #4CAF50; 
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      background: #fff;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: left;
+    }
+    label {
+      margin-right: 1rem;
+    }
+    button {
+      margin: 0.5rem 0.5rem 0 0;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #4CAF50;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+  </header>
+  <main>
+    <div class="section" id="date-settings">
+      <h3>Cấu Hình Ngày Nhập Điểm</h3>
+      <form id="settingsForm">
+        <label>Ngày bắt đầu nhập:
+          <input type="date" name="admin_start" required>
+        </label>
+        <label>Ngày kết thúc nhập:
+          <input type="date" name="admin_end" required>
+        </label>
+        <button type="submit">Lưu Cấu Hình</button>
+      </form>
+      <div id="currentSettings"></div>
+    </div>
+    
+    <div class="section" id="database">
+      <h3>Database Điểm</h3>
+      <table id="dbTable">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Họ Tên</th>
+            <th>Lớp</th>
+            <th>Điểm</th>
+            <th>Ngày Bắt Đầu</th>
+            <th>Ngày Kết Thúc</th>
+            <th>Ngày Nộp</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="clearDatabase" style="background: #d9534f;">Xoá Database</button>
+    </div>
+  </main>
+  
+  <script>
+    document.getElementById('settingsForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const formData = new FormData(this);
+      const settings = {
+        admin_start: formData.get('admin_start'),
+        admin_end: formData.get('admin_end')
+      };
+      localStorage.setItem('settings', JSON.stringify(settings));
+      displaySettings();
+    });
+    
+    function displaySettings() {
+      const settings = JSON.parse(localStorage.getItem('settings'));
+      if (settings) {
+        document.getElementById('currentSettings').innerHTML = `
+          <p>Ngày bắt đầu: <strong>${settings.admin_start}</strong></p>
+          <p>Ngày kết thúc: <strong>${settings.admin_end}</strong></p>
+        `;
+      }
+    }
+    
+    function displayDatabase() {
+      const db = JSON.parse(localStorage.getItem('database')) || [];
+      const tbody = document.getElementById('dbTable').querySelector('tbody');
+      tbody.innerHTML = '';
+      db.forEach((record, index) => {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${record.student.name}</td>
+          <td>${record.student.class}</td>
+          <td>${record.totalPoints}</td>
+          <td>${record.startDate || ''}</td>
+          <td>${record.endDate || ''}</td>
+          <td>${new Date(record.submittedAt).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+    
+    document.getElementById('clearDatabase').addEventListener('click', function(){
+      if(confirm("Bạn có chắc chắn muốn xoá toàn bộ cơ sỏ dữ liệu không?")){
+        localStorage.removeItem('Cơ sở dữ liệu');
+        displayDatabase();
+      }
+    });
+    
+    displaySettings();
+    displayDatabase();
+  </script>
+</body>
+</html>

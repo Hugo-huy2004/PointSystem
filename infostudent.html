@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Nhập Thông Tin Sinh Viên</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #f0f0f0;
+    }
+    header {
+      background: #4CAF50; 
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      background: #fff;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    form label {
+      display: block; 
+      margin-top: 1rem;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #4CAF50;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Hệ Thống Chấm Điểm</h1>
+  </header>
+  <main>
+    <h2>Nhập Thông Tin Cá Nhân</h2>
+    <form id="studentForm">
+      <label>Họ và tên (Tên Thánh):
+        <input type="text" name="name" required>
+      </label>
+      <label>Ngày/Tháng/Năm Sinh:
+        <input type="date" name="dob" required>
+      </label>
+      <label>Lớp:
+        <select name="class">
+          <option value="Nghĩa sĩ 1">Nghĩa sĩ 1</option>
+          <option value="Nghĩa sĩ 2">Nghĩa sĩ 2</option>
+        </select>
+      </label>
+      <label>Số điện thoại:
+        <input type="tel" name="phone" required>
+      </label>
+      <label>Địa chỉ thường trú:
+        <input type="text" name="address" required>
+      </label>
+      <button type="submit">Tiếp tục</button>
+    </form>
+  </main>
+  <script>
+    document.getElementById("studentForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      const formData = new FormData(this);
+      const student = {
+        name: formData.get("name"),
+        dob: formData.get("dob"),
+        class: formData.get("class"),
+        phone: formData.get("phone"),
+        address: formData.get("address")
+      };
+      localStorage.setItem("studentInfo", JSON.stringify(student));
+      window.location.href = "enterpoint.html";
+    });
+  </script>
+</body>
+</html>
